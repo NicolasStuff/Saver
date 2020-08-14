@@ -10,14 +10,39 @@ import {
     Text }
 from 'react-native';
 
+import * as Location from 'expo-location';
+import * as Permissions from 'expo-permissions';
+
 export default function feed() {
+
+    const [maptriplive, setMaptriplive] = useState([])
+
+    useEffect(() => {
+        async function askPermissions() {
+          var { status } = await Permissions.askAsync(Permissions.LOCATION);
+          if (status === 'granted') {
+            Location.watchPositionAsync({distanceInterval: 2},
+              (location) => {
+                console.log('ma position',location)
+                setMaptriplive([...maptriplive, {latitude: location.coords.latitude, longitude: location.coords.longitude}])
+              }
+            );
+          }
+        }
+        askPermissions();
+      }, []);
+
+      sendPosition = () => {
+        
+      }
+
     return (
         <View style={styles.container}>
             <Text style={styles.header}>Je suis en danger</Text>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => { sendPosition() }}>
                 <Text style={styles.DangerInTheStreet}>J'ai besoins d'aide dans la rue ! Appuyer pour partager ma position</Text>
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => { sendPosition() }}>
                 <Text style={styles.DangerInTheHouse}> J'ai besoins d'aide chez moi ! Appuyer pour partager ma position</Text>
             </TouchableOpacity>
         </View>
